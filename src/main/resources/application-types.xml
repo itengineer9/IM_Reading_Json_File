@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="json_file" format="json">
+      <types:shape format="weave" example="examples/kunde.json"><![CDATA[%dw 2.0
+
+type json_file = {|
+  Mandant: String, 
+  Kundennummer: String, 
+  AngelegtAm: String, 
+  GeaendertAm: String, 
+  Anrede: String, 
+  Name1: String, 
+  Betriebsstaette: String, 
+  VANummer: String, 
+  Fachrichtung: String, 
+  "Straße": String, 
+  Land: String, 
+  Postleitzahl: String, 
+  Ort: String, 
+  DSStatus: Number {"typeId": "int"}, 
+  FachrichtungLOV: String, 
+  LANummer: String, 
+  InstTyp: String, 
+  InstName: String, 
+  MaveName: String, 
+  GeborenAm: String, 
+  PatientStatus: String, 
+  Zuzahlungsbefreiung: String, 
+  Patientenerklaerung: String, 
+  Pflegestufe: String, 
+  Status: Number {"typeId": "int"}, 
+  IstVerstorben: Boolean, 
+  IstKunde: Boolean, 
+  IstVerordner: Boolean, 
+  Hauptvermittler: String
+|} {"example": "{\\\"Mandant\\\":\\\"100\\\",\\\"Kundennummer\\\":\\\"001\\\",\\\"AngelegtAm\\\":\\\"2020-03-26T13:42:53Z\\\",\\\"GeaendertAm\\\":\\\"2020-03-26T13:42:53Z\\\",\\\"Anrede\\\":\\\"Herr\\\",\\\"Name1\\\":\\\"Max Mustermann\\\",\\\"Betriebsstaette\\\":\\\"HQ\\\",\\\"VANummer\\\":\\\"DE1234567890\\\",\\\"Fachrichtung\\\":\\\"IT\\\",\\\"Stra\u00DFe\\\":\\\"H\u00FCttenstrasse 50\\\",\\\"Land\\\":\\\"Deutschland\\\",\\\"Postleitzahl\\\":\\\"45527\\\",\\\"Ort\\\":\\\"Hattingen\\\",\\\"DSStatus\\\":1,\\\"FachrichtungLOV\\\":\\\"Beratung\\\",\\\"LANummer\\\":\\\"laNummer\\\",\\\"InstTyp\\\":\\\"instTyp\\\",\\\"InstName\\\":\\\"instName\\\",\\\"MaveName\\\":\\\"maveName\\\",\\\"GeborenAm\\\":\\\"2005-05-17\\\",\\\"PatientStatus\\\":\\\"aktiv\\\",\\\"Zuzahlungsbefreiung\\\":\\\"nein\\\",\\\"Patientenerklaerung\\\":\\\"nein\\\",\\\"Pflegestufe\\\":\\\"1\\\",\\\"Status\\\":0,\\\"IstVerstorben\\\":false,\\\"IstKunde\\\":true,\\\"IstVerordner\\\":false,\\\"Hauptvermittler\\\":\\\"F\\/S\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="mapping_json_file" format="json">
+      <types:shape format="weave" example="examples/json_map_json.json"><![CDATA[%dw 2.0
+
+type mapping_json_file = {|
+  Name: String, 
+  Anrede: String, 
+  AngelegtAm: String, 
+  GeaendertAm: String, 
+  "Straße": String, 
+  Postleitzahl: String, 
+  Ort: String, 
+  Land: String, 
+  GeborenAm: String, 
+  Zuzahlungsbefreiung: Boolean, 
+  Patientenerklaerung: Boolean
+|} {"example": "{\\\"Name\\\":\\\"Max Mustermann\\\",\\\"Anrede\\\":\\\"Herr\\\",\\\"AngelegtAm\\\":\\\"2020-03-26T13:42:53Z\\\",\\\"GeaendertAm\\\":\\\"2020-03-26T13:42:53Z\\\",\\\"Stra\u00DFe\\\":\\\"H\u00FCttenstrasse 50\\\",\\\"Postleitzahl\\\":\\\"45527\\\",\\\"Ort\\\":\\\"Hattingen\\\",\\\"Land\\\":\\\"Deutschland\\\",\\\"GeborenAm\\\":\\\"2005-05-17\\\",\\\"Zuzahlungsbefreiung\\\":false,\\\"Patientenerklaerung\\\":false}"}
+
+]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#d600fa08-f2d9-4aee-8cf8-3d23cc1d2c11">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="json_file"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#c0b3f519-cfca-4931-959b-0dbf7772fb7b">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="mapping_json_file"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

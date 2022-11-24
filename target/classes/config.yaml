@@ -1,0 +1,5 @@
+http:
+  port: "8081"
+
+api:
+  autodiscovery: "18324661"

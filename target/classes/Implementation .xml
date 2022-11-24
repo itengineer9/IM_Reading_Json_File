@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+
+	<flow name="readJsonFile" doc:id="968d7e0c-434b-46df-9158-36a6b6ae9c57" >
+		<file:listener doc:name="On New or Updated File" doc:id="091438cf-a6f9-436e-bbe6-37faa5b2bbfa" config-ref="File_Config" directory="C:\Users\Administrator\OneDrive\Dokumente\candidate_task\Input" autoDelete="true" moveToDirectory="C:\Users\Administrator\OneDrive\Dokumente\candidate_task\Done">
+			<scheduling-strategy>
+				<fixed-frequency timeUnit="SECONDS" frequency="5" />
+			</scheduling-strategy>
+		</file:listener>
+		<file:read doc:name="Read json file" doc:id="d600fa08-f2d9-4aee-8cf8-3d23cc1d2c11" config-ref="File_Config" path="C:\Users\Administrator\OneDrive\Dokumente\candidate_task\kunde.json"/>
+		<ee:transform doc:name="Mapping payload" doc:id="c0b3f519-cfca-4931-959b-0dbf7772fb7b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	Name: payload.Name1,
+	Anrede: payload.Anrede,
+	AngelegtAm: payload.AngelegtAm as DateTime,
+	GeaendertAm: payload.GeaendertAm as DateTime,
+	Strasse: 'payload.Straße',
+	Postleitzahl: payload.Postleitzahl,
+	Ort: payload.Ort,
+	Land: payload.Land,
+	GeborenAm: payload.GeborenAm as Date,
+	Zuzahlungsbefreiung: if(payload.Zuzahlungsbefreiung == "nein") false else true,
+	Patientenerklaerung: if(payload.Patientenerklaerung == "nein") false else true
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Request json_to_csv Api" doc:id="99321f2f-5d4f-4116-86e4-e49c03a73e8e" config-ref="json_to_csv_Request_configuration" path="/jsontocsv" />
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d3f4ea30-c964-4cc9-9975-8751a41c9623" >
+				<file:move doc:name="Move To Error Folder" doc:id="d6772de8-1a26-4d38-98be-c29a259d3b6d" config-ref="File_Config" sourcePath="C:\Users\Administrator\OneDrive\Dokumente\candidate_task\Input\kunde.json" targetPath="C:\Users\Administrator\OneDrive\Dokumente\candidate_task\Error"/>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+
+</mule>
